@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+  <title>Cadastro de Cursos</title>
+
+ <script>
+  let listaCursos = [];
+  let indiceEdicao = null; 
+
+  function mostrarLista() {
+    const corpo = document.getElementById('tabelaCorpo');
+    corpo.innerHTML = ''; 
+
+    for (let i = 0; i < listaCursos.length; i++) {
+      const curso = listaCursos[i];
+      const linha = `
+        <tr>
+          <td>${i}</td>
+          <td>${curso.nome}</td>
+          <td>${curso.regime}</td>
+          <td>${curso.carga}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <button class="btn btn-secondary btn-sm" onclick="editarCurso(${i})">Editar</button>
+              <button class="btn btn-danger btn-sm" onclick="removerCurso(${i})">Remover</button>
+            </div>
+          </td>
+        </tr>
+      `;
+      corpo.innerHTML += linha;
+    }
+  }
+
+  function limpaCampos() {
+    document.getElementById('nome').value = '';
+    document.getElementById('regime').value = '';
+    document.getElementById('carga').value = '';
+    indiceEdicao = null; 
+  }
+
+  function salvar() {
+    const nome = document.getElementById('nome').value.trim();
+    const regime = document.getElementById('regime').value.trim();
+    const carga = document.getElementById('carga').value.trim();
+
+    if (nome === '' || regime === '' || carga === '') {
+      alert('Preencha todos os campos!');
+      return;
+    }
+
+    if (isNaN(regime) || isNaN(carga)) {
+      alert('Regime e Carga Horária devem ser números!');
+      return;
+    }
+
+    if (indiceEdicao === null) {
+      listaCursos.push({ nome, regime, carga });
+    } else {
+      listaCursos[indiceEdicao] = { nome, regime, carga };
+      indiceEdicao = null;
+    }
+
+    mostrarLista();
+    limpaCampos();
+  }
+
+  function editarCurso(indice) {
+    const curso = listaCursos[indice];
+    document.getElementById('nome').value = curso.nome;
+    document.getElementById('regime').value = curso.regime;
+    document.getElementById('carga').value = curso.carga;
+    indiceEdicao = indice;
+  }
+
+  function removerCurso(indice) {
+    if (confirm('Deseja realmente remover este curso?')) {
+      listaCursos.splice(indice, 1);
+      mostrarLista();
+    }
+  }
+
+  function limparLista() {
+    if (confirm('Deseja limpar toda a lista de cursos?')) {
+      listaCursos = [];
+      mostrarLista();
+    }
+  }
+
+  function inverterLista() {
+    listaCursos.reverse();
+    mostrarLista();
+  }
+
+  function removerUltimo() {
+    if (listaCursos.length === 0) {
+      alert('A lista está vazia!');
+    } else {
+      const removido = listaCursos.pop();
+      alert(`Removido: ${removido.nome} (${removido.regime}, ${removido.carga}h)`);
+      mostrarLista();
+    }
+  }
+</script>
+
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4 text-center">Cadastro de Cursos</h1>
+
+    <div class="card p-4 shadow-sm">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Nome do curso</label>
+          <input type="text" id="nome" class="form-control" placeholder="Digite o nome do curso">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Regime</label>
+          <input type="number" id="regime" class="form-control" placeholder="Selecione...">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Carga Horária</label>
+          <input type="number" id="carga" class="form-control" placeholder="Ex: 60">
+        </div>
+      </div>
+
+      <div class="mt-3 d-flex gap-2">
+        <button class="btn btn-success" onclick="salvar()">Salvar</button>
+        <button class="btn btn-outline-secondary" onclick="limpaCampos()">Limpar Campos</button>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="d-flex gap-2 mb-3">
+      <button class="btn btn-danger" onclick="removerUltimo()">Remover Último</button>
+      <button class="btn btn-danger" onclick="limparLista()">Limpar Lista</button>
+      <button class="btn btn-secondary" onclick="inverterLista()">Inverter Lista</button>
+    </div>
+
+    <div id="minhaDiv">
+      <table class="table table-bordered table-striped align-middle shadow-sm">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Regime</th>
+            <th>Carga Horária</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaCorpo">
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
